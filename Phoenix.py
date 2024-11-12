@@ -56,6 +56,7 @@ def check_call(token):
 
 def run(path):
     code = read(path)
+    passed = False
     for b in code:
         token = re.split('([();])| ', b)
         m = 0
@@ -63,12 +64,13 @@ def run(path):
             if not n == None:
                 token[m] = n.replace('\n', '')
                 m += 1
+        print(token)
         if token[0] == "print":
             if check_call(token):
                 print(get_types(token[2])['values'])
             else:
                 error(" 呼び出されると期待していましたが、呼び出されませんでした expect '()'")
-        if token[0] == "var" or token[0] == "let":
+        elif token[0] == "var" or token[0] == "let":
             var.append(token[1])
             if token[2] == "=":
                 var_i.append(get_types(token[3])['values'])
@@ -76,10 +78,13 @@ def run(path):
             else:
                 var_i.append("null")
                 var_t.append("any")
-        elif token[0].startswith('//'):
-            pass
+        elif b.startswith("//"):
+            passed = True    
         else:
-            error(" 関数がありません")
+            if not passed:
+                error(" 関数がありません")
+            else:
+                passed = False
 
 
 run('./test.phe')
