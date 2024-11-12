@@ -11,3 +11,10 @@ Phoenixは、再生と変革を象徴する新しいプログラミング言語�
 簡単な「Hello, World!」プログラムの例です：  
 ```phoenix
 print("Hello, World!")
+```
+## 変数
+変数代入
+```phoenix
+let x = "hello world"
+print(x)
+```
