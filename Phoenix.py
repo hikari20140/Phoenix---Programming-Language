@@ -76,6 +76,10 @@ def run(path):
             else:
                 var_i.append("null")
                 var_t.append("any")
+        elif token[0].startswith('//'):
+            pass
+        else:
+            error(" 関数がありません")
 
 
 run('./test.phe')
