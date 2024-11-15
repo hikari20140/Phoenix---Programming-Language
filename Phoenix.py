@@ -40,6 +40,22 @@ def get_types(strs):
     elif strs in var:
         types = var_t[var.index(strs)]
         value = var_i[var.index(strs)]
+    elif strs[len(strs) - 1] == "]":
+        bb = strs.split('[')
+        print(bb)
+        varl = get_types(bb[0])
+        print(var, var_i, var_t)
+        if "array" in varl['typess'] or "list" in varl['typess']:
+            if "list" in varl['typess']:
+                m = list(strs[1:len(strs) - 1])[(bb[1])[0:len(bb[1]) - 1]]
+                types = get_types(m)
+                value = types['values']
+                types = types['typess']
+            else:
+                m = list(strs)[(bb[1])[0:len(bb[1]) - 1]]
+                types = get_types(m)
+                value = types['values']
+                types = types['typess']
     return dict(typess=types,values=value)
 
 def read(path):
@@ -49,7 +65,7 @@ def read(path):
 def check_call(token):
     if len(token) < 2:
         return False
-    if token[1] == "(" and token[len(token) - 2] == ")":
+    if '(' in token and ')' in token:
         return True
     else:
         return False
@@ -58,7 +74,7 @@ def run(path):
     code = read(path)
     passed = False
     for b in code:
-        token = re.split('([();])| ', b)
+        token = re.split('([();]| )', b)
         m = 0
         for n in token:
             if not n == None:
@@ -67,19 +83,24 @@ def run(path):
         print(token)
         if token[0] == "print":
             if check_call(token):
-                print(get_types(token[2])['values'])
+                b = token.index(')')
+                strings = token[2:b]
+                c = ""
+                for m in strings:
+                    c += m
+                print(get_types(c)['values'])
             else:
                 error(" 呼び出されると期待していましたが、呼び出されませんでした expect '()'")
         elif token[0] == "var" or token[0] == "let":
-            var.append(token[1])
-            if token[2] == "=":
-                var_i.append(get_types(token[3])['values'])
-                var_t.append(get_types(token[3])['typess'])
+            var.append(token[2])
+            if token[4] == "=":
+                var_i.append(get_types(token[6])['values'])
+                var_t.append(get_types(token[6])['typess'])
             else:
                 var_i.append("null")
                 var_t.append("any")
         elif b.startswith("//"):
-            passed = True    
+            passed = True  
         else:
             if not passed:
                 error(" 関数がありません")
